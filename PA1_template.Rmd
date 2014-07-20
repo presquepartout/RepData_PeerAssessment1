@@ -84,9 +84,44 @@ median_total_steps <- median(total_day)
 
 ## Average Daily Activity
 
+We'd like to compute the average number of steps at each 5 minute interval and plot these averages. 
 
+```{r}
+stepMatrix <- matrix (nrow = 288, ncol = length(dateVector))
+for (i in 1:length(dateVector)) {
+        begin <- 288*(i-1) + 1
+        end <- 288*i
+        stepMatrix[,i] <- activityData$steps[begin:end]      
+}
+stepsIntervals <- 1:288
+for (i in 1:288) {
+        stepsIntervals[i] <- mean(stepMatrix[i,], na.rm = TRUE)
+}
+```
 
-## Iputting Missing Values
+To plot the averages over the course of a day: 
+
+```{r}
+x_values <- activityData$interval[1:288]
+plot(x_values, stepsIntervals
+     , main = "Average Steps at Daily 5-Minute Intervals"
+     , xlab = "Time Interval"
+     , ylab = "Average Steps"
+     , type = "l")
+```
+
+To determine the time at which the maximum average number of steps occurs: 
+
+```{r}
+maxSteps <- max(stepsIntervals)
+testMax <- stepsIntervals == maxSteps
+indexMax <- which(testMax)
+timeMax <- activityData$interval[indexMax]
+```
+
+The time when the maximum occurs is `r timeMax`. 
+
+## Inputting Missing Values
 
 ## Activity Levels: Weekday Vs. Weekend
 
