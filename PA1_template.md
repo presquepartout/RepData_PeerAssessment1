@@ -1,20 +1,19 @@
 # Reproducible Research: Peer Assessment 1
 ===========================================
 
-This is an R Markdown document. 
+This project is an analysis of two months of exercise data,
+obtained during October and November of 2012. 
 
 ## Loading and Preprocessing Data
 
 The following code makes sure that the "activity.csv" file 
-is present in the current working directory. If it is not,
-the file is downloaded. 
+is present in the current working directory. The file is
+unzipped from "activity.zip". 
 
 
 ```r
 if(!file.exists("activity.csv")) {
-      fileUrl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
-      download.file(fileUrl, destfile = "./power.zip", method = "curl")
-      unzip("./power.zip")
+      unzip("./activity.zip")
       if(!file.exists("activity.csv")) {
            message("source data can't be downloaded")
         }
@@ -84,7 +83,10 @@ total_day <- sapply(dateVector, function(i) {
 The following code plots a histogram of total day steps: 
 
 ```r
-hist(total_day, breaks = 22, col ="red")
+hist(total_day, breaks = 22
+     , main = "Histogram of Total Steps Per Day"
+     , col ="red"
+     , xlab = "Total Steps Per Day")
 ```
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
@@ -94,21 +96,11 @@ And the mean and median are computed as follows:
 
 ```r
 mean_total_steps <- mean(total_day)
-mean_total_steps
-```
-
-```
-## [1] 9354
-```
-
-```r
 median_total_steps <- median(total_day)
-median_total_steps
 ```
 
-```
-## [1] 10395
-```
+* The mean total steps per day is: 9354.2295.
+* The median total steps per day is: 1.0395 &times; 10<sup>4</sup>.
 
 ## Average Daily Activity
 
