@@ -146,8 +146,82 @@ timeMax <- activityData$interval[indexMax]
 
 The time when the maximum occurs is 835. 
 
-## Inputting Missing Values
+## Impute Missing Values
+
+Some of the step values are missing, labeled as NA. 
+We will replace missing values with the average values for the 5-minute interval, calculated in the previous section, and see what kind of difference that makes. 
+
+
+```r
+revisedStepMatrix <- stepMatrix
+for (i in 1:61) {
+      for (j in 1:288){
+         if(is.na(revisedStepMatrix[j,i])) {
+           revisedStepMatrix[j,i] <- stepsIntervals[j]
+         } 
+      }
+}
+```
+We now have revised step values in the matrix revisedStepMatrix. 
+We will create a revised data frame. 
+
+
+```r
+revisedSteps <- numeric()
+adder <- numeric()
+for (i in 1:61) {
+              adder <- revisedStepMatrix[,i]
+              revisedSteps <- c(revisedSteps, adder)           
+        } 
+revisedData <- activityData
+revisedData$steps <- revisedSteps
+```
+
+The new dataset is called revisedSteps. 
+
+We can look at the revised histogram:
+
+
+```r
+rev_total_day <- sapply(dateVector, function(i) {
+             rev_total_day <- numeric()
+             x_sub <- subset(revisedData, date == i)
+             sum_sub <- sum(x_sub$steps, na.rm=TRUE)
+             rev_total_day <- c(rev_total_day, sum_sub)
+}
+)
+```
+
+The following code plots a histogram of total day steps: 
+
+```r
+hist(rev_total_day, breaks = 22
+     , main = "Histogram of (Revised) Total Steps Per Day"
+     , col ="red"
+     , xlab = "Total Steps Per Day")
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+
+And the mean and median are computed as follows: 
+
+
+```r
+rev_mean_total_steps <- mean(rev_total_day)
+rev_median_total_steps <- median(rev_total_day)
+```
+
+* The mean total steps per day is: 1.0766 &times; 10<sup>4</sup>.
+* The median total steps per day is: 1.0766 &times; 10<sup>4</sup>.
+
+Compared to previous:
+* previous mean: 9354.2295
+* previous median: 1.0395 &times; 10<sup>4</sup>
+
+The differences are (revised) - unrevised: 
+* mean: 1411.9592
+* median: 371.1887
+
+
 
 ## Activity Levels: Weekday Vs. Weekend
-
-
