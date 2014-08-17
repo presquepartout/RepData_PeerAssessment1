@@ -6,7 +6,7 @@ obtained during October and November of 2012.
 
 ## Loading and Preprocessing Data
 
-The following code makes sure that the "activity.csv" file 
+The data is contained in a file named "activity.csv". The following code makes sure that the "activity.csv" file 
 is present in the current working directory. The file is
 unzipped from "activity.zip". 
 
@@ -79,12 +79,12 @@ mean_total_steps <- mean(total_day)
 median_total_steps <- median(total_day)
 ```
 
-* The mean total steps per day is: `r mean_total_steps`.
-* The median total steps per day is: `r median_total_steps`.
+* The mean total steps per day is: `r round(mean_total_steps)`.
+* The median total steps per day is: `r round(median_total_steps)`.
 
 ## Average Daily Activity
 
-We'd like to compute the average number of steps at each 5 minute interval and plot these averages. 
+The data contains a long stream of the number of steps taken at each five-minute interval, each day. To compute the average number of steps at each 5-minute interval, I'm putting the data into a matrix where each row is a five-minute interval, and each column is a date. Then the row averages are the five-minute averages. 
 
 ```{r}
 stepMatrix <- matrix (nrow = 288, ncol = length(dateVector))
@@ -119,7 +119,7 @@ indexMax <- which(testMax)
 timeMax <- activityData$interval[indexMax]
 ```
 
-The time when the maximum occurs is `r timeMax`. 
+The time when the maximum occurs is `r sub("([0-9])([0-9])$", "\\:\\1\\2", as.character(timeMax))`. 
 
 ## Impute Missing Values
 
@@ -179,8 +179,8 @@ rev_mean_total_steps <- mean(rev_total_day)
 rev_median_total_steps <- median(rev_total_day)
 ```
 
-* The mean total steps per day is: `r rev_mean_total_steps`.
-* The median total steps per day is: `r rev_median_total_steps`.
+* The mean total steps per day is: `r round(rev_mean_total_steps)`.
+* The median total steps per day is: `r round(rev_median_total_steps)`.
 
 Compared to previous:
 * previous mean: `r mean_total_steps`
@@ -190,7 +190,24 @@ The differences are (revised) - unrevised:
 * mean: `r rev_mean_total_steps - mean_total_steps`
 * median: `r rev_median_total_steps - median_total_steps`
 
+```{r}
+meanNA <- format(as.character(round(mean_total_steps)), scientific = FALSE)
+medianNA <- format(as.character(median_total_steps), scientific = FALSE)
+meanRev <- format(as.character(rev_mean_total_steps), scientific = FALSE)
+medianRev <- format(as.character(rev_median_total_steps), scientific = FALSE)
+deltaMean <- rev_mean_total_steps - mean_total_steps
+deltaMed <- rev_median_total_steps - median_total_steps
+```
+
+The results are summarized here: 
+
+Result | NAs Present | NAs Removed | Difference
+-------|-------------|-------------|-------------
+mean   |`r meanNA`   |`r meanRev`  |`r deltaMean`
+median |`r medianNA` |`r medianRev`|`r deltaMed`
+
 Filling in missing values appears to raise the mean and median. The effect is greater on the mean. 
 
 ## Activity Levels: Weekday Vs. Weekend
 
+In order to compare the five-minute averages on weekdays vs. weekends, I will separate the data matrix stepMatrix into weekday and weekend, compute five-minute averages, and plot the averages. 
