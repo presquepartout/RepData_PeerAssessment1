@@ -1,4 +1,4 @@
-# Reproducible Research: Peer Assessment 1
+Reproducible Research: Peer Assessment 1
 ===========================================
 
 This project is an analysis of two months of exercise data,
@@ -192,11 +192,11 @@ The differences are (revised) - unrevised:
 
 ```{r}
 meanNA <- format(as.character(round(mean_total_steps)), scientific = FALSE)
-medianNA <- format(as.character(median_total_steps), scientific = FALSE)
-meanRev <- format(as.character(rev_mean_total_steps), scientific = FALSE)
-medianRev <- format(as.character(rev_median_total_steps), scientific = FALSE)
-deltaMean <- rev_mean_total_steps - mean_total_steps
-deltaMed <- rev_median_total_steps - median_total_steps
+medianNA <- format(as.character(round(median_total_steps)), scientific = FALSE)
+meanRev <- format(as.character(round(rev_mean_total_steps)), scientific = FALSE)
+medianRev <- format(as.character(round(rev_median_total_steps)), scientific = FALSE)
+deltaMean <- round(rev_mean_total_steps - mean_total_steps)
+deltaMed <- round(rev_median_total_steps - median_total_steps)
 ```
 
 The results are summarized here: 
@@ -211,3 +211,40 @@ Filling in missing values appears to raise the mean and median. The effect is gr
 ## Activity Levels: Weekday Vs. Weekend
 
 In order to compare the five-minute averages on weekdays vs. weekends, I will separate the data matrix stepMatrix into weekday and weekend, compute five-minute averages, and plot the averages. 
+
+To separate stepMatrix into weekdaySteps and weekendSteps:
+
+```{r}
+weekdayBoolean <- c(TRUE, FALSE, FALSE, rep(TRUE, 4))
+## The period Oct. 1/2010 to Nov. 30/2010 is 61 days. 
+columnBoolean <- logical(length=61)
+columnBoolean <- (!columnBoolean)*weekdayBoolean
+columnBoolean <- as.logical(columnBoolean)
+## Use columnBoolean to separate stepMatrix:
+weekdayMatrix <- stepMatrix[, columnBoolean]
+weekendMatrix <- stepMatrix[,!columnBoolean]
+```
+
+Now compute the five-minute averages for weekday and weekend: 
+
+```{r}
+weekdayAvs <- numeric(length=288)
+weekendAvs <- numeric(length=288)
+weekdayAvs <- rowMeans(weekdayMatrix, na.rm = TRUE)
+weekendAvs <- rowMeans(weekendMatrix, na.rm = TRUE)
+```
+
+Now make a dual plot of weekday averages and weekend averages for comparison: 
+
+```{r}
+## for the x-axis use x_values:
+timeIntervals <- c(x_values, x_values)
+minuteAvs <- c(weekdayAvs, weekendAvs)
+timeLevels <- c(rep("Weekday", 288), rep("Weekend", 288))
+plotFrame <- data.frame(timeIntervals, minuteAvs, timeLevels)
+library(lattice)
+xyplot(minuteAvs~timeIntervals|timeLevels, type = "l", layout=c(1,2))
+```
+
+The two plots show more spread-out activity during the weekend. 
+
