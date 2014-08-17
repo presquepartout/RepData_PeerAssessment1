@@ -1,4 +1,4 @@
-# Reproducible Research: Peer Assessment 1
+Reproducible Research: Peer Assessment 1
 ===========================================
 
 This project is an analysis of two months of exercise data,
@@ -6,7 +6,7 @@ obtained during October and November of 2012.
 
 ## Loading and Preprocessing Data
 
-The following code makes sure that the "activity.csv" file 
+The data is contained in a file named "activity.csv". The following code makes sure that the "activity.csv" file 
 is present in the current working directory. The file is
 unzipped from "activity.zip". 
 
@@ -99,12 +99,12 @@ mean_total_steps <- mean(total_day)
 median_total_steps <- median(total_day)
 ```
 
-* The mean total steps per day is: 9354.2295.
+* The mean total steps per day is: 9354.
 * The median total steps per day is: 1.0395 &times; 10<sup>4</sup>.
 
 ## Average Daily Activity
 
-We'd like to compute the average number of steps at each 5 minute interval and plot these averages. 
+The data contains a long stream of the number of steps taken at each five-minute interval, each day. To compute the average number of steps at each 5-minute interval, I'm putting the data into a matrix where each row is a five-minute interval, and each column is a date. Then the row averages are the five-minute averages. 
 
 
 ```r
@@ -144,7 +144,7 @@ indexMax <- which(testMax)
 timeMax <- activityData$interval[indexMax]
 ```
 
-The time when the maximum occurs is 835. 
+The time when the maximum occurs is 8:35. 
 
 ## Impute Missing Values
 
@@ -223,5 +223,73 @@ The differences are (revised) - unrevised:
 * median: 371.1887
 
 
+```r
+meanNA <- format(as.character(round(mean_total_steps)), scientific = FALSE)
+medianNA <- format(as.character(round(median_total_steps)), scientific = FALSE)
+meanRev <- format(as.character(round(rev_mean_total_steps)), scientific = FALSE)
+medianRev <- format(as.character(round(rev_median_total_steps)), scientific = FALSE)
+deltaMean <- round(rev_mean_total_steps - mean_total_steps)
+deltaMed <- round(rev_median_total_steps - median_total_steps)
+```
+
+The results are summarized here: 
+
+Result | NAs Present | NAs Removed | Difference
+-------|-------------|-------------|-------------
+mean   |9354   |10766  |1412
+median |10395 |10766|371
+
+Filling in missing values appears to raise the mean and median. The effect is greater on the mean. 
 
 ## Activity Levels: Weekday Vs. Weekend
+
+In order to compare the five-minute averages on weekdays vs. weekends, I will separate the data matrix stepMatrix into weekday and weekend, compute five-minute averages, and plot the averages. 
+
+To separate stepMatrix into weekdaySteps and weekendSteps:
+
+
+```r
+weekdayBoolean <- c(TRUE, FALSE, FALSE, rep(TRUE, 4))
+## The period Oct. 1/2010 to Nov. 30/2010 is 61 days. 
+columnBoolean <- logical(length=61)
+columnBoolean <- (!columnBoolean)*weekdayBoolean
+```
+
+```
+## Warning: longer object length is not a multiple of shorter object length
+```
+
+```r
+columnBoolean <- as.logical(columnBoolean)
+## Use columnBoolean to separate stepMatrix:
+weekdayMatrix <- stepMatrix[, columnBoolean]
+weekendMatrix <- stepMatrix[,!columnBoolean]
+```
+
+Now compute the five-minute averages for weekday and weekend: 
+
+
+```r
+weekdayAvs <- numeric(length=288)
+weekendAvs <- numeric(length=288)
+weekdayAvs <- rowMeans(weekdayMatrix, na.rm = TRUE)
+weekendAvs <- rowMeans(weekendMatrix, na.rm = TRUE)
+```
+
+Now make a dual plot of weekday averages and weekend averages for comparison: 
+
+
+```r
+## for the x-axis use x_values:
+timeIntervals <- c(x_values, x_values)
+minuteAvs <- c(weekdayAvs, weekendAvs)
+timeLevels <- c(rep("Weekday", 288), rep("Weekend", 288))
+plotFrame <- data.frame(timeIntervals, minuteAvs, timeLevels)
+library(lattice)
+xyplot(minuteAvs~timeIntervals|timeLevels, type = "l", layout=c(1,2))
+```
+
+![plot of chunk unnamed-chunk-19](figure/unnamed-chunk-19.png) 
+
+The two plots show more spread-out activity during the weekend. 
+
